@@ -1,0 +1,154 @@
+/* Charts styles */
+
+.clear {
+    clear: both;
+    overflow: auto;
+}
+
+.clear::after {
+  content: "";
+  clear: both;
+  display: table;   
+}
+
+.string-box {
+    
+}
+
+.string-box__section {
+    font-size: 18px;
+}
+
+.birth-date {
+    font-size: 20px;
+    padding: 10px 5px;
+}
+
+.string-box__letter {
+    font-size: 14px;
+    float:left;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+.string-box__letter.vocal {
+    background-color: green;
+}
+.string-box__letter.vocal:hover {
+    background-color: red;
+}
+.string-box__letter.cons {
+    background-color: red;
+}
+.string-box__letter.cons:hover {
+    background-color: green;
+}
+span.button {
+    display: inline-block;
+    /*background-color: #CCC;*/
+    color: #FFF;
+    padding: 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+span.button:hover {
+    //background-color: #BBB;
+}
+
+span.button-create-chart {
+    display: inline-block;
+    background-color: #CCC;
+    font-size: 20px;
+    padding: 10px 20px;
+    border-radius: 3px;
+    color: #FFF;
+    margin-top: 10px;
+    width: 60%;
+}
+
+span.button-create-chart:hover {
+    background-color: #999;
+
+}
+
+.button-save-chart {
+    border-radius: 5px;
+    background-color: #e00; 
+    display: block;
+    float: none;
+    margin-top: 10px;
+    text-align: center;
+    width: 60%;
+}
+.button-save-chart:hover {
+    background-color: #e81049;
+}
+
+.chart-data {
+    padding: 5px 10px;
+    font-size: 16px;
+    line-height: 2em;
+}
+
+.button-wrapper {
+    clear: both;
+    padding: 10px 0;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.pdf-button {
+    display: block;
+    color: #FFF;
+    background-color: #CCC;
+    padding: 10px 20px;
+    width: 60%;
+    text-align: center;
+    font-size: 18px;
+    border-radius: 5px;
+}
+.pdf-button:hover {
+    color: #FFF;
+    background-color: #AAA;
+}
+ul.int-list {
+   list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.button-section-content {
+    background-color: #ccc;
+    margin-bottom: 5px;
+}
+.button-section-content:hover {
+    background-color: #999;
+}
+
+/**
+ * Pronostico Styles
+ */
+.pro-intro {
+    padding-left: 20px; 
+}
+.pro-title {
+    padding-left: 30px;
+}
+.pro-box {
+    padding-left: 50px;
+}
+.number-box__header {
+    display: flex;
+    align-items: center;
+}
+.number-box__content {
+    padding: 10px 20px;
+}
+.pro-footer {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 50px 0;
+    text-align: center;
+    width: 100%;
+}

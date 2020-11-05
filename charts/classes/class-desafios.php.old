@@ -1,0 +1,144 @@
+<?php
+/**
+* Calculo de Desafios.
+*/
+
+class Desafios extends Charts {
+
+    function __construct() {
+        parent::__construct();
+    }
+    
+    function get_desafios( $post_id ) {
+        
+        $chart_data = get_post_meta( $post_id, 'chart_numbers');
+        
+        // 1. Cargamos datos sobre la fecha de nacimiento.
+        $day = $chart_data[0]['birthDate']['day'];
+        $month = $chart_data[0]['birthDate']['month'];
+        $year = $chart_data[0]['birthDate']['year']; 
+        
+        // 2. Reducimos los numros a un digito.
+        $day = $this->one_digit_number( $this->one_digit_converter($day) );
+        $month = $this->one_digit_number( $this->one_digit_converter($month) );
+        $year = $this->one_digit_number( $this->year_to_num($year) );
+        
+        echo $year;
+        
+        // 3. Calculo de los desafios
+        
+        // 3.1 Restamos dia a mes.
+        $des[1] = abs( $day - $month );
+        
+        $des[2] = abs( $day - $year );
+        
+        $des[3] = abs( $des[1] -$des[2] );
+        
+        $des[4] = abs( $month - $year );
+        
+        if ($des[3] != $des[4]) {
+            $des[5] = abs( $des[3] - $des[4] );
+        }
+        
+        // 4. Guardamos los datos en la DB
+        foreach($chart_data as $data ) {
+            $data['des'] = $des;
+        }
+        
+        $metaid = update_post_meta($post_id, 'chart_numbers', $data);
+
+    }
+    
+    function display_des( $post_id ) {
+        
+        $chart_data = get_post_meta( $post_id, 'chart_numbers');
+        
+        $des = $chart_data[0]['des'];
+        
+        $html = '<h2>Desafíos</h2>';
+        
+        // Section Definition
+        $content = new Chart_Content();
+        $html = $html . $content ->get_definition_by_section('des', 0);
+        $html .= "<table class='chart-table table'>";
+        $html .= "<tr><td>1° = $des[1] de 0 a 9 años</td></tr>";
+        $html .= "<tr><td>2° = $des[2] de 9 a 18 años</td></tr>";
+        $html .= "<tr><td>3° = $des[3] de 18 a 27 años</td></tr>";
+        if (isset($des[5]) && !empty($des[5])) {
+           $des_int_5 = $this->get_des_by_number( $des[5] );
+           $html .= "<tr><td>4° = $des[4] de 27 a 36 años</td></tr>";
+           $html .= "<tr><td>5° = $des[5] a partir de los 36 años</td></tr>";
+        } else {
+           $html .= "<tr><td>4° = $des[4] a partir de los 27 años.</td></tr>"; 
+        }
+        $html .= "</table>";
+
+        // Removed repeated interpretation numbers from array.
+        if ( is_array( $des ) ) {
+            $des_ints = array_unique($des);
+
+            foreach( $des_ints as $des_number ) {
+                $html .= "<h3>Interpretacion para el numero $des_number</h3>"; 
+                $html .= $this->get_des_by_number( $des_number );
+            }
+        }
+        
+        return $html;
+        
+    }
+    
+    function year_to_num($year) {
+        
+        $year_arr = str_split($year, 2);
+    
+        if ( $year_arr[0] == 20 ) {
+            
+            $year_decimal = str_split($year_arr[1]);
+            
+            $sum = $year_arr[0] + $year_decimal[0] * $year_decimal[1];
+            
+        } else {
+           $year_arr = str_split($year);
+            
+            foreach ($year_arr as $val) {
+                $sum += $val; 
+            }
+        }
+        
+        return $sum;
+    } 
+    
+    function get_des_by_number( $number ) {
+        $int_ID = '';
+  
+        $int_query = new WP_Query( array(
+            'post_type' => array('interpretaciones'), 
+            'meta_query' => array( 
+                array( 
+                    'key' => 'numero', 
+                    'value' => $number 
+                ), 
+                array( 
+                    'key' => 'tipo', 
+                    'value' => 'des' 
+                ), 
+            )
+        )); 
+        
+        while ( $int_query->have_posts() ) :
+
+            $int_query->the_post();
+        
+            $int_ID = get_the_ID();
+        
+        endwhile;
+        wp_reset_query();
+        
+        // Load Interpretation post by Id.
+        $post_des = get_post( $int_ID );
+
+        $des_content = apply_filters('the_content', $post_des->post_content );
+
+        return $des_content;
+    }
+}
