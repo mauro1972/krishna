@@ -42,7 +42,7 @@ class Pronostico_Anual extends Charts {
 			$chart_data = get_post_meta( $data['chartID'], 'chart_numbers');
 			$pin = new Pinaculos();
 			$pin_value = $pin->edades_pinaculos( $chart_data, $data['age'] );
-			$data['pin'] = $pin_value;
+			$data['pin'] = $chart_data[0]['pin'][$pin_value];
 			$meta_id = add_post_meta($post_id, 'pronostico_anual', $data, true );
 			$content = $this->set_pro_content( $post_id );
 			$meta_content = add_post_meta($post_id, 'pronostico_anual_content', $content, true );
@@ -78,7 +78,7 @@ class Pronostico_Anual extends Charts {
         // Pronostico Values
         $data['py'] = $this->personal_year( $chart_numbers[0]['birthDate']['day'], $chart_numbers[0]['birthDate']['month'], $pronostico_year );
 
-		$data['quarters'] = $this->quarters_number( $birth_year, $data['age'] );
+		$data['quarters'] = $this->quarters_number( $pronostico_year, $data['age'], $chart_numbers  );
         
         // Creamos el Pronostico.
         $pronostico_ID = $this->create_pronostico_post( $data );
@@ -171,26 +171,26 @@ class Pronostico_Anual extends Charts {
         return $sum;
     }
 
-	public function quarters_number( $birthday_year, $age ) {
+	public function quarters_number( $pronostico_year, $age, $chart_numbers  ) {
 
 		// Primer Cuatrimestre.
-		$first_cuarter = $birthday_year + $age;
+		$first_cuarter = $pronostico_year + $age;
 		$first_cuarter_number = $this->one_digit_converter( $first_cuarter );
 		//echo '<br>Primer cuatrimestre: '. $first_cuarter_number;
 
 		$out['firstq'] = $first_cuarter_number;
 		
 		// Segundo Cuatrimestre.
-		$lv = $this->chart_numbers[0]['lv_full'];
+		$lv = $chart_numbers[0]['lv_full'];
 		$lv = $this->get_bigger_number( $lv );
-		$second_quarter = $birthday_year + $lv;
+		$second_quarter = $pronostico_year + $lv;
 		//echo '<br>Segundo Cuatrimestre: '. $this->one_digit_converter( $second_quarter );
 		$out['secondq'] = $this->one_digit_converter( $second_quarter );
 
 		// Third Quarter.
-		$na = $this->chart_numbers[0]['na_full'];
+		$na = $chart_numbers[0]['na_full'];
 		$na = $this->get_bigger_number( $na );
-		$third_quarter = $birthday_year + $na;
+		$third_quarter = $pronostico_year + $na;
 		//echo '<br>Tercer cuatrimestre: '. $this->one_digit_converter( $third_quarter );
 		$out['thirdq'] = $this->one_digit_converter( $third_quarter );
 
@@ -353,7 +353,7 @@ class Pronostico_Anual extends Charts {
 
 	public function pronostico_anual_content( $post_id = NULL ) {
 		$chart_content = new Chart_Content();
-        $show_buttons = get_post_meta( $pro_id, 'show_buttons' );
+        $show_buttons = get_post_meta( $post_id, 'show_buttons' );
 
 		// Get data from carta.
 		$data_pronostico = get_post_meta( $post_id, 'pronostico_anual');
