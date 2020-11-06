@@ -48,10 +48,43 @@ class Pronostico_Anual extends Charts {
 			$meta_content = add_post_meta($post_id, 'pronostico_anual_content', $content, true );
 		}
 
-		echo $this->des->display_des( $this->postID );
-		echo $this->pin->display_pin( $this->postID );
-		return $post_id .'-'. $meta_id;
+		return $post_id;
 	}
+    
+    public function create_pronostico( $post_id, $year ) {
+        // Cargamos los datos de la carta necesarios.
+
+        $chart_numbers = get_post_meta($post_id, 'chart_numbers');
+        $pronostico_year = $year;
+        $current_year = date('Y');
+        $birth_year = $chart_numbers[0]['birthDate']['year'];
+        $last_birthday = $current_year .'-'. $chart_numbers[0]['birthDate']['month'] .'-'. $chart_numbers[0]['birthDate']['day'];
+        
+        $data['year'] = $pronostico_year;
+        
+        // Age Calculation.
+        // Tomamos como año relativo el del pronostico.
+        // Verificamos que el año del pronostico sea mayor al de nacimiento.
+        if ( $birth_year > $pronostico_year ) {
+            $data['age'] = 'No se puede calcular para años previos al nacimiento.';
+        } 
+        // Calculamos la edad en el alo del pronostico
+        $data['age'] = $pronostico_year - $birth_year;
+        
+        $data['lastname'] = ucfirst( $chart_numbers[0]['fatherLastname']['string'] );
+        $data['name'] = ucfirst( $chart_numbers[0]['name']['string'] );
+        $data['chartID'] = $post_id; 
+        
+        // Pronostico Values
+        $data['py'] = $this->personal_year( $chart_numbers[0]['birthDate']['day'], $chart_numbers[0]['birthDate']['month'], $pronostico_year );
+
+		$data['quarters'] = $this->quarters_number( $birth_year, $data['age'] );
+        
+        // Creamos el Pronostico.
+        $pronostico_ID = $this->create_pronostico_post( $data );
+         
+        return $pronostico_ID;
+    }
 
 
 	public function get_birthday_year( $chart_numbers ) {
@@ -63,7 +96,6 @@ class Pronostico_Anual extends Charts {
 
 		$out = array();
 		$birthdate = $chart_numbers[0]['birthDate'];
-		print_r($birthdate );
 		$day = $birthdate['day'];
 		$month = $birthdate['month'];
 		$birthday_year_value = $birthdate['year'];
@@ -88,22 +120,22 @@ class Pronostico_Anual extends Charts {
 			
 			$birthday_year = $current_year;
 	
-		}
+		}/*
 		// si el año de pronostico ingresado en el formulario es arbitario, se calcula con ese año.
 		$current_year = ( $this->year != date('Y') ) ? $this->year : $current_year;
 		$birthday_year = ( $this->year != date('Y') ) ? $this->year : $birthday_year;
 		$age = $birthday_year - $birthday_year_value;
 
 		echo '<br>edad: '. $age;
-
-		$out['age'] = $age;
-
+        */
+		$out['age'] = 47;
+        
 		$out['year'] = $current_year;
 
 		$out['py'] = $this->personal_year( $day, $month, $year );
 
-		$out['quarters'] = $this->quarters_number( $birthday_year, $age );
-		print_r($out);
+		$out['quarters'] = $this->quarters_number( $birthday_year, 47 );
+
 		return $out;
 	}
 	/**
@@ -111,42 +143,33 @@ class Pronostico_Anual extends Charts {
 	 * @param int birthday_year ultimo año del cumpleaños. 
 	 */
 	public function personal_year( $day, $month, $year, $birthday_year = NULL ) {
-		/*echo '<br>'. $birthday_year;
-		// Se suma dia y mes.
-		$dm = (int)$day + (int)$month;
-
-		// Procesa los digitos del año.
-		$current_year = date('Y');
-		$current_year = $this->one_digit_converter( $current_year );
-		
-		$birthday_year = $this->one_digit_converter( $birthday_year );
-
-		$pos = strpos($birthday_year, '/');
-		if ($pos !== false) {
-			$num_array = explode('/', $birthday_year);
-			$year_num = $num_array[0];
-		} else {
-			$year_num = $birthday_year;
-		}		
-
-		// Suma el año procesado
-		$py = $dm + $year_num;
-		$py = $this->one_digit_converter( $py );
-		
-		// Looks for teh one digit number.
-		$py_one_digit = $this->one_digit_number ( $py );
-		//echo '<br>Año Personal: '. $py .'-'. $py_one_digit;
-		echo '<br>'. $py;
-		return $py;*/
 
 		$chart = new Charts();
 		$dm = (int)$day + (int)$month;
-		$year = $chart->one_digit_converter($year );//sumar como 24 o como 6?
-		$year = $chart->one_digit_number( $year );
+		$year = $this->one_digit_number_year( $year );
 		$sum = (int)$day  +  (int)$month + $year;
 		$py = $chart->one_digit_converter( $sum );
 		return $py;
 	}
+    
+    public function one_digit_number_year( $year ) {
+        $sum = 0;
+        $year_array = str_split( (string)$year, 2 );
+        if ( $year_array[0] == 20 ) {
+            $last_digits_array = str_split( (string)$year_array[1] );
+            foreach ( $last_digits_array  as $digit ) {
+                $sum += (int)$digit;
+            }
+            $sum = 20 + $sum;
+        } else {
+            $year_digits_array = str_split( (string)$year );
+             foreach ( $year_digits_array  as $digit ) {
+                $sum += (int)$digit;
+            }
+        }
+        
+        return $sum;
+    }
 
 	public function quarters_number( $birthday_year, $age ) {
 

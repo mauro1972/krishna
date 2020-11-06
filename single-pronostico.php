@@ -1,8 +1,8 @@
 <?php
-	$chart = new Charts();
+	/*$chart = new Charts();
 	$pro = new Pronostico_Anual();
-	$py = $pro->personal_year( 21, 11, 2022 );
-	echo $py;
+	$py = $pro->one_digit_number_year( 2022 );
+	echo $py;*/
 ?>
 
 <?php get_header(); ?>

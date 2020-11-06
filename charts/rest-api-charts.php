@@ -380,6 +380,17 @@ function updateChartData($data) {
 
 function createChart($data) {
     
+    if ( $data['action'] == 'create-pronostico' ) {
+        $chart_id = $data['chartID'];
+        $year = $data['year'];
+        $pro = new Pronostico_Anual();
+        $pro_id = $pro->create_pronostico( $chart_id, $year );
+        $path = get_post_permalink( $pro_id );
+        $response['path'] = $path;
+        echo json_encode( $response );
+        die(); 
+    }
+    
     $form_data = $data['formData'];
     
     // create chart post type.

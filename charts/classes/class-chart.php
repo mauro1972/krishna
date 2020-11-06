@@ -288,9 +288,9 @@ class Charts {
     }
     
     function one_digit_number( $num ) {
-        if ( $num == 20 ) {
+        /*if ( $num == 20 ) {
             return 20;
-        }
+        }*/
         $pos = false;
 
         $pos = strpos( $num, '/' );

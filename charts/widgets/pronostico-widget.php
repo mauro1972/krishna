@@ -125,7 +125,7 @@ function __construct() {
     function create_pronostico( $post_id, $year ) {
         
         // Cargamos los datos de la carta necesarios.
-        $chart_numbers = get_post_meta($post_id, 'chart_numbers');
+        /*$chart_numbers = get_post_meta($post_id, 'chart_numbers');
         $pronostico = new Pronostico_Anual( $post_id, $chart_numbers, $year );
 
         // Calculamos los datos para el pronostico anual.
@@ -135,7 +135,7 @@ function __construct() {
         $data['lastname'] = ucfirst( $chart_numbers[0]['fatherLastname']['string'] );
         $data['name'] = ucfirst( $chart_numbers[0]['name']['string'] );
         $data['chartID'] = $post_id;
-        $pronostico_ID = $pronostico->create_pronostico_post( $data );
+        $pronostico_ID = $pronostico->create_pronostico_post( $data );*/
 
         //echo $pronostico_ID;
         // Imprimimos el ID/Link del reciente pronostico creado.

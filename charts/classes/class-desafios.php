@@ -26,13 +26,19 @@ class Desafios extends Charts {
         // 3. Calculo de los desafios
         
         // 3.1 Restamos dia a mes.
-        $des[1] = abs( $day - $month );
+        if ( is_numeric( $day ) && is_numeric( $year ) && is_numeric( $month ) ) {
+            $des[1] = abs( $day - $month );
         
-        $des[2] = abs( $day - $year );
-        
-        $des[3] = abs( $des[1] -$des[2] );
-        
-        $des[4] = abs( $month - $year );
+            $des[2] = abs( $day - $year );
+
+            $des[3] = abs( $des[1] -$des[2] );
+
+            $des[4] = abs( $month - $year ); 
+            
+        }  else {
+            return;
+        }
+
         
         if ($des[3] != $des[4]) {
             $des[5] = abs( $des[3] - $des[4] );
@@ -134,7 +140,12 @@ class Desafios extends Charts {
            $year_arr = str_split($year);
             
             foreach ($year_arr as $val) {
-                $sum += $val; 
+                if ( is_numeric( $val) ) {
+                    $sum += $val;
+                } else {
+                    $sum = $val;
+                }
+                 
             }
         }
         

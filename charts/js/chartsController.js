@@ -57,11 +57,37 @@ class charts_controller {
     
     // Methods
     createPronostico( e ) {
+        e.preventDefault();
         var DOM = this.get_DOMstrings();
-        var e = document.getElementById("choice-chart");
-        var chartID = e.options[e.selectedIndex].value;
-        console.log( chartID );
-        //event.preventDefault();
+        var carta = document.getElementById("choice-chart");
+        var chartID = carta.options[carta.selectedIndex].value;
+        var year = document.getElementById( 'pronostico-year' ).value;
+        console.log( chartID +' '+ year );
+        // data for ajax
+        var datos = {
+            'action': 'create-pronostico',
+            'chartID': chartID,
+            'year': year,
+        }
+        
+        $.ajax({
+            beforeSend: (xhr) => {
+                xhr.setRequestHeader('X-WP-Nonce', chartsData.nonce);
+            },
+            url: chartsData.root_url + '/wp-json/charts-json/v1/chart',
+            type: 'GET',
+            data: datos,
+            success: (response) => {
+                
+                console.log(response);
+                window.location = response.path;
+                
+            },
+            error: (response) => {
+                console.log(response);
+            },
+        });        
+        
     }
 
     saveContentToChart(e) {

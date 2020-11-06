@@ -26,18 +26,21 @@ class Pinaculos extends Charts {
         // 3. Calculo de los desafios
         
         // 3.1 Restamos dia a mes.
+        if ( is_numeric( $day ) && is_numeric( $year ) && is_numeric( $month ) ) {
+            $pin[1] = $this->one_digit_number( abs( $day + $month ) );
 
-        $pin[1] = $this->one_digit_number( abs( $day + $month ) );
-        
-        $pin[2] = $this->one_digit_number( abs( $day + $year ) );
-        
-        $pin[3] = $this->one_digit_number( abs( $pin[1] + $pin[2] ) );
-        
-        $pin[4] = $this->one_digit_number( abs( $month + $year ) );
-        
-        // 4. Guardamos los datos en la DB
-        foreach($chart_data as $data ) {
-            $data['pin'] = $pin;
+            $pin[2] = $this->one_digit_number( abs( $day + $year ) );
+
+            $pin[3] = $this->one_digit_number( abs( $pin[1] + $pin[2] ) );
+
+            $pin[4] = $this->one_digit_number( abs( $month + $year ) );
+
+            // 4. Guardamos los datos en la DB
+            foreach($chart_data as $data ) {
+                $data['pin'] = $pin;
+            }
+        } else {
+            $data['pin'] = 'error, non numeric';
         }
 
         $metaid = update_post_meta($post_id, 'chart_numbers', $data);
@@ -61,20 +64,26 @@ class Pinaculos extends Charts {
         // 3. Calculo de los desafios
         
         // 3.1 Restamos dia a mes.
+        
+        if ( is_numeric( $day ) && is_numeric( $year ) && is_numeric( $month ) ) {
+            $double = ( abs( $day + $month ) == 11 ) ? '11/' : '';
+            $pin[1] = $double . $this->one_digit_number( abs( $day + $month ) );
+
+            $double = ( abs( $day + $year ) == 11 ) ? '11/' : '';
+            $pin[2] = $double . $this->one_digit_number( abs( $day + $year ) );
+
+            $double = ( abs( $this->one_digit_number($pin[1]) + $this->one_digit_number($pin[2]) ) == 11 ) ? '11/' : '';
+            $pin[3] = $double . $this->one_digit_number( abs( $this->one_digit_number($pin[1]) + $this->one_digit_number($pin[2]) ) );
+
+            $double = ( abs( $month + $year ) == 11 ) ? '11/' : '';
+            $pin[4] = $double . $this->one_digit_number( abs( $month + $year ) );	
+
+            return $pin;          
+        } else {
+            return;
+        }
 		
-		$double = ( abs( $day + $month ) == 11 ) ? '11/' : '';
-        $pin[1] = $double . $this->one_digit_number( abs( $day + $month ) );
-        
-		$double = ( abs( $day + $year ) == 11 ) ? '11/' : '';
-        $pin[2] = $double . $this->one_digit_number( abs( $day + $year ) );
-        
-		$double = ( abs( $this->one_digit_number($pin[1]) + $this->one_digit_number($pin[2]) ) == 11 ) ? '11/' : '';
-        $pin[3] = $double . $this->one_digit_number( abs( $this->one_digit_number($pin[1]) + $this->one_digit_number($pin[2]) ) );
-        
-		$double = ( abs( $month + $year ) == 11 ) ? '11/' : '';
-        $pin[4] = $double . $this->one_digit_number( abs( $month + $year ) );	
-	
-		return $pin;
+
 	
 	}
     
@@ -197,7 +206,12 @@ class Pinaculos extends Charts {
            $year_arr = str_split($year);
             
             foreach ($year_arr as $val) {
-                $sum += $val; 
+                if ( is_numeric( $val ) ) {
+                  $sum += $val;  
+                } else {
+                    $sum = $val;
+                }
+                 
             }
         }
         
