@@ -353,6 +353,7 @@ class Pronostico_Anual extends Charts {
 
 	public function pronostico_anual_content( $post_id = NULL ) {
 		$chart_content = new Chart_Content();
+        $show_buttons = get_post_meta( $pro_id, 'show_buttons' );
 
 		// Get data from carta.
 		$data_pronostico = get_post_meta( $post_id, 'pronostico_anual');
@@ -418,10 +419,10 @@ class Pronostico_Anual extends Charts {
 		return ob_get_clean();
 	}
 
-	public function split_number( $post_id, $number = NULL, $tipo = NULL, $order = NULL ) {
+	public function split_number( $post_id, $number = NULL, $tipo = NULL, $order = NULL, $buttons = true ) {
 		$number_parts[] = $number;
 		
-		$buttons = $this->buttons( $post_id );
+		$buttons = $this->buttons( $post_id, $buttons );
 
 		if ( strpos( $number, '/' ) ) {
 			$numberArray = explode( '/', $number );
@@ -460,9 +461,10 @@ class Pronostico_Anual extends Charts {
 		return ob_get_clean();
 	} 
 
-	public function buttons( $post_id ) {
+	public function buttons( $post_id, $buttons ) {
 		$post = get_post( $post_id );
-		if ( $post->post_content == '' ) {
+
+		if ( $post->post_content == '' && $buttons ) {
 			ob_start();
 			?>
 				<div class="number-box__buttons">
@@ -473,7 +475,11 @@ class Pronostico_Anual extends Charts {
 			<?php
 			return ob_get_clean();
 		} else {
-			return '';
+			ob_start();
+			?>
+
+			<?php
+			return ob_get_clean();
 		}
 	}
 }

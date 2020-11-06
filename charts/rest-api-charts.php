@@ -37,6 +37,9 @@ function saveChartContent( $data ) {
 
         $pro_id = str_replace( 'post-', '', $data['proId'] );
         $post_id = $pro_id;
+        
+        // buttons controller.
+        update_post_meta( $pro_id, 'show_buttons', true );
 
         $post = get_post($post_id);
 
@@ -67,6 +70,9 @@ function saveChartContent( $data ) {
 
         // Get Pronostico anual data.
         $pro_content = get_post_meta( $pro_id, 'pronostico_anual_content');
+        
+        // buttons controller.
+        update_post_meta( $pro_id, 'show_buttons', false );
 
         $chart_content = new Chart_Content();
         $pro = new Pronostico_Anual();
@@ -82,11 +88,10 @@ function saveChartContent( $data ) {
         foreach ( $pro_content[0] as $tipo => $datos ) {
             //$new_content = 'Definicion del Año Personal';
             if ( $tipo == 'py'){
-                //print_r($datos);
                 ?>
                 <h2>Tú Año Personal es el <?php echo $datos['value']; ?></h2>
                 <div class="pro-box py-box">
-                    <?php echo $pro->split_number( $pro_id, $datos['value'], $tipo ); ?>
+                    <?php echo $pro->split_number( $pro_id, $datos['value'], $tipo, NULL, false ); ?>
                 </div>                
                 <?php
             }
@@ -101,7 +106,7 @@ function saveChartContent( $data ) {
 			</div>                 
 			    <h3 class="pro-title">Primer Cuatrimestre <?php echo $datos['value'];?>.</h3>
                     <div class="pro-box py-box">
-                        <?php echo $pro->split_number( $pro_id, $datos['value'], 'cua', $tipo ); ?>
+                        <?php echo $pro->split_number( $pro_id, $datos['value'], 'cua', $tipo, false ); ?>
                     </div>                
                 <?php
             }
@@ -110,7 +115,7 @@ function saveChartContent( $data ) {
             
 			    <h3 class="pro-title">Segundo Cuatrimestre <?php echo $datos['value'];?>.</h3>
                     <div class="pro-box py-box">
-                        <?php echo $pro->split_number( $pro_id, $datos['value'], 'cua', $tipo ); ?>
+                        <?php echo $pro->split_number( $pro_id, $datos['value'], 'cua', $tipo, false ); ?>
                     </div>                
                 <?php
             }
@@ -120,7 +125,7 @@ function saveChartContent( $data ) {
             
 			    <h3 class="pro-title">Tercer Cuatrimestre <?php echo $datos['value'];?>.</h3>
                     <div class="pro-box py-box">
-                        <?php echo $pro->split_number( $pro_id, $datos['value'], 'cua', $tipo ); ?>
+                        <?php echo $pro->split_number( $pro_id, $datos['value'], 'cua', $tipo, false ); ?>
                     </div>                
                 <?php
             }
@@ -137,7 +142,7 @@ function saveChartContent( $data ) {
                     ?>
                         <h3 class="pro-title"><?php echo $order; ?>° Desafío: <strong><?php echo $num['value']; ?></strong></h3>
                         <div class="pro-box des-box">
-                            <?php echo $pro->split_number( $pro_id, $datos[$order]['value'], $tipo, $order ); ?>
+                            <?php echo $pro->split_number( $pro_id, $datos[$order]['value'], $tipo, $order, false ); ?>
                         </div>                
                     <?php
                     }
@@ -152,7 +157,7 @@ function saveChartContent( $data ) {
                 </div>  
                 <h3 class="pro-title">En esta etapa de tu vida Tú Pináculo es el <?php echo $datos['value']; ?>:</h3>								
 				<div class="pro-box pin-box">
-					<?php echo $pro->split_number( $pro_id, $datos['value'], $tipo ); ?>
+					<?php echo $pro->split_number( $pro_id, $datos['value'], $tipo, NULL, false ); ?>
 				</div>	          
             <?php    
             }
@@ -166,6 +171,7 @@ function saveChartContent( $data ) {
         $my_post = array();
         $my_post['ID'] = $post->ID;
         $my_post['post_content'] = $post->content;
+        $my_post['post_status'] = 'draft';
         $response['post'] = wp_update_post( $my_post );
         $response['response'] = 'SUCCESS';
         
