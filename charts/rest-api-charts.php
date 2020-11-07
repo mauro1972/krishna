@@ -72,7 +72,7 @@ function saveChartContent( $data ) {
         $pro_content = get_post_meta( $pro_id, 'pronostico_anual_content');
         
         // buttons controller.
-        update_post_meta( $pro_id, 'show_buttons', false );<F
+        update_post_meta( $pro_id, 'show_buttons', false );
 
         $chart_content = new Chart_Content();
         $pro = new Pronostico_Anual();
