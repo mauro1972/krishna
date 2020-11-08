@@ -332,8 +332,10 @@ class Pronostico_Anual extends Charts {
 				<?php echo $this->split_number( $post_id, $data_pronostico[0]['py'], 'py' ); ?>
 			</div>
 
-        <h2>Número de tú edad:</h2>
-        <h3 class="pro-title">Significado para el número <?php echo $data_pronostico[0]['age']; ?>:</h3>
+        <h2>Edad</h2>
+        <div class="pro-intro age-intro">
+            <?php echo $chart_content->get_definition_by_section('age', 0); ?>
+        </div>        
         <div class="pro-box py-box">
             <?php echo $this->split_number( $post_id, $data_pronostico[0]['age'], 'age' ); ?>
         </div>        
