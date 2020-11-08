@@ -43,8 +43,11 @@ class Pronostico_Anual extends Charts {
 			$pin = new Pinaculos();
 			$pin_value = $pin->edades_pinaculos( $chart_data, $data['age'] );
 			$data['pin'] = $chart_data[0]['pin'][$pin_value];
+            
 			$meta_id = add_post_meta($post_id, 'pronostico_anual', $data, true );
+            
 			$content = $this->set_pro_content( $post_id );
+            
 			$meta_content = add_post_meta($post_id, 'pronostico_anual_content', $content, true );
 		}
 
@@ -80,6 +83,7 @@ class Pronostico_Anual extends Charts {
 
 		$data['quarters'] = $this->quarters_number( $pronostico_year, $data['age'], $chart_numbers  );
         
+        
         // Creamos el Pronostico.
         $pronostico_ID = $this->create_pronostico_post( $data );
          
@@ -87,57 +91,6 @@ class Pronostico_Anual extends Charts {
     }
 
 
-	public function get_birthday_year( $chart_numbers ) {
-		echo 'pronostico year: '. $this->year;
-		echo '<br>current year '. date('Y');
-
-		$time = time();
-		//$time = $time->format('U');
-
-		$out = array();
-		$birthdate = $chart_numbers[0]['birthDate'];
-		$day = $birthdate['day'];
-		$month = $birthdate['month'];
-		$birthday_year_value = $birthdate['year'];
-		$current_year = date('Y');
-		$last_birthday = $current_year .'-'. $month .'-'. $day;
-		$year = $this->year;
-
-		
-		//Create a DateTime object.
-		$dateTime = new DateTime((string)$last_birthday);
-		
-		//Format it into a Unix timestamp.
-		$my_last_birthdate = $dateTime->format('U');
-	
-		//echo '<br>mi ultimo cumpleaños fue en el: ';
-	
-		if ( $my_last_birthdate > $time ) {
-
-			$birthday_year = $current_year - 1;
-			
-		} else {
-			
-			$birthday_year = $current_year;
-	
-		}/*
-		// si el año de pronostico ingresado en el formulario es arbitario, se calcula con ese año.
-		$current_year = ( $this->year != date('Y') ) ? $this->year : $current_year;
-		$birthday_year = ( $this->year != date('Y') ) ? $this->year : $birthday_year;
-		$age = $birthday_year - $birthday_year_value;
-
-		echo '<br>edad: '. $age;
-        */
-		$out['age'] = 47;
-        
-		$out['year'] = $current_year;
-
-		$out['py'] = $this->personal_year( $day, $month, $year );
-
-		$out['quarters'] = $this->quarters_number( $birthday_year, 47 );
-
-		return $out;
-	}
 	/**
 	 * @param int $year año de nacimeinto.
 	 * @param int birthday_year ultimo año del cumpleaños. 
@@ -262,14 +215,16 @@ class Pronostico_Anual extends Charts {
 
 		$inter['py']['value'] = $pro_data[0]['py'];
 		$inter['py']['inter'] = '';
+        
+        $inter['age']['value'] = $pro_data[0]['age'];
+        $inter['age']['inter'] = '';
+        
 		$inter['firstq']['value'] = $pro_data[0]['quarters']['firstq'];
 		$inter['firstq']['inter'] = '';
 		$inter['secondq']['value'] = $pro_data[0]['quarters']['secondq'];
 		$inter['secondq']['inter'] = '';
 		$inter['thirdq']['value'] = $pro_data[0]['quarters']['thirdq'];
 		$inter['thirdq']['inter'] = '';
-		$inter['pin']['value'] = $pro_data[0]['pin'];
-		$inter['pin']['inter'] = '';					
 
 		$inter['des'][1]['value'] = $pro_data[0]['des']['1'];
 		$inter['des'][1]['inter'] = ''; 
@@ -279,6 +234,9 @@ class Pronostico_Anual extends Charts {
 		$inter['des'][3]['inter'] = ''; 
 		$inter['des'][4]['value'] = $pro_data[0]['des']['4'];
 		$inter['des'][4]['inter'] = ''; 
+        
+		$inter['pin']['value'] = $pro_data[0]['pin'];
+		$inter['pin']['inter'] = '';	        
 
 		// Creates an array to save interpretations separated by each number.
 		foreach ( $inter as $tipo => $data ) {
@@ -373,6 +331,12 @@ class Pronostico_Anual extends Charts {
 			<div class="pro-box py-box">
 				<?php echo $this->split_number( $post_id, $data_pronostico[0]['py'], 'py' ); ?>
 			</div>
+
+        <h2>Número de tú edad:</h2>
+        <h3 class="pro-title">Significado para el número <?php echo $data_pronostico[0]['age']; ?>:</h3>
+        <div class="pro-box py-box">
+            <?php echo $this->split_number( $post_id, $data_pronostico[0]['age'], 'age' ); ?>
+        </div>        
 
 		<h2>Cuatrimestres</h2>
 			<div class="pro-intro cua-intro">
@@ -482,4 +446,60 @@ class Pronostico_Anual extends Charts {
 			return ob_get_clean();
 		}
 	}
+    
+    /**
+    *  Calcula los intervalos para cada cuatrimestre.
+    */
+    public function quarter_duration( $day, $month, $year ) {
+        $months = array(
+            '1' => 'Enero',
+            '2' => 'Febrero',
+            '3' => 'Marzo',
+            '4' => 'Abril',
+            '5' => 'Mayo',
+            '6' => 'Junio',
+            '7' => 'Julio',
+            '8' => 'Agosto',
+            '9' => 'Septiembre',
+            '10' => 'Octubre',
+            '11' => 'Noviembre',
+            '12' => 'Diciembre',             
+        );
+        
+        // Primer Cuatrimestre
+        $limit = $month +  4;
+        if ( $limit <= 12) {
+            $out['first'] = '1° Cuatrimestre desde el '. $day .' de '. $months[$month] .' de '. $year .', hasta el '.$day .' de '. $months[$limit] .' de '. $year;
+            $month = $limit;
+        } else {
+            $limit = $limit - 12;
+            $out['first'] = '1° Cuatrimestre desde el '. $day .' de '. $months[$month] .' de '. $year .', hasta el '.$day .' de '. $months[$limit] .' de '. ( $year + 1 );   
+            $year += 1; 
+            $month = $limit;
+        }
+        // Segundo Cuatrimestre
+         $limit = $month +  4;
+        if ( $limit <= 12) {
+            $out['second'] = '2° Cuatrimestre desde el '. $day .' de '. $months[$month] .' de '. $year .', hasta el '.$day .' de '. $months[$limit] .' de '. $year;
+            $month = $limit;
+        } else {
+            $limit = $limit - 12;
+            $out['second'] = '2° Cuatrimestre desde el '. $day .' de '. $months[$month] .' de '. $year .', hasta el '.$day .' de '. $months[$limit] .' de '. ( $year + 1 );   
+            $year += 1; 
+            $month = $limit;
+        }
+        
+        // Tercer cuatrimestre
+         $limit = $month +  4;
+        if ( $limit <= 12) {
+            $out['third'] = '3° Cuatrimestre desde el '. $day .' de '. $months[$month] .' de '. $year .', hasta el '.$day .' de '. $months[$limit] .' de '. $year;
+            $month = $limit;
+        } else {
+            $limit = $limit - 12;
+            $out['third'] = '3° Cuatrimestre desde el '. $day .' de '. $months[$month] .' de '. $year .', hasta el '.$day .' de '. $months[$limit] .' de '. ( $year + 1 );   
+            $year += 1; 
+        }
+        
+        return $out;
+    }
 }

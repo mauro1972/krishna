@@ -66,6 +66,7 @@ function saveChartContent( $data ) {
         $data_chart = get_post_meta( $data_pronostico[0]['chartID'], 'chart_numbers');
         $birth_day = $data_chart[0]['birthDate']['day'];
         $birth_month = date("F", mktime(0, 0, 0, $data_chart[0]['birthDate']['month'], 10));
+        $birth_month_number = $data_chart[0]['birthDate']['month'];
         $year = $data_pronostico[0]['year'];
 
         // Get Pronostico anual data.
@@ -96,15 +97,30 @@ function saveChartContent( $data ) {
                 <?php
             }
             ?>
+            
+            <?php
+                if ( $tipo == 'age' ) {
+                    ?>
+                    <h2>Edad:</h2>
+                    <?php echo $chart_content->get_definition_by_section('age', 0); ?>
+                    <h3 class="pro-title">Definición <?php echo $data_pronostico[0]['age']; ?> Años:</h3>
+                    <div class="pro-box age-box">
+                        <?php echo $pro->split_number( $post_id, $datos['value'], $tipo, NULL, false ); ?>
+                    </div> 
+                    <?php              
+                }
+            ?>
        
             <?php
+            $quarters_titles = $pro->quarter_duration( $birth_day, $birth_month_number, $year );
+            //print_r($quarters_titles );
             if ( $tipo == 'firstq' ) {
                 ?>
             <h2>Cuatrimestres.</h2>
 			<div class="pro-intro cua-intro">
 				<?php echo $chart_content->get_definition_by_section('cua', 0); ?>
 			</div>                 
-			    <h3 class="pro-title">Primer Cuatrimestre <?php echo $datos['value'];?>.</h3>
+                <h3 clas="pro-title"><?php echo $quarters_titles['first']; ?></h3>   
                     <div class="pro-box py-box">
                         <?php echo $pro->split_number( $pro_id, $datos['value'], 'cua', $tipo, false ); ?>
                     </div>                
@@ -113,7 +129,7 @@ function saveChartContent( $data ) {
             if ( $tipo == 'secondq' ) {
                 ?>
             
-			    <h3 class="pro-title">Segundo Cuatrimestre <?php echo $datos['value'];?>.</h3>
+			    <h3 clas="pro-title"><?php echo $quarters_titles['second']; ?></h3>
                     <div class="pro-box py-box">
                         <?php echo $pro->split_number( $pro_id, $datos['value'], 'cua', $tipo, false ); ?>
                     </div>                
@@ -123,7 +139,7 @@ function saveChartContent( $data ) {
             if ( $tipo == 'thirdq' ) {
                 ?>
             
-			    <h3 class="pro-title">Tercer Cuatrimestre <?php echo $datos['value'];?>.</h3>
+			    <h3 clas="pro-title"><?php echo $quarters_titles['third']; ?></h3>
                     <div class="pro-box py-box">
                         <?php echo $pro->split_number( $pro_id, $datos['value'], 'cua', $tipo, false ); ?>
                     </div>                

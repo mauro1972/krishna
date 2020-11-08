@@ -1,6 +1,12 @@
 <?php
+    /*$pro = new Pronostico_Anual();
+    $periodos = $pro->quarter_duration( 21, 5, 2020 );
+    echo $periodos['first'] . '<br>';
+    echo $periodos['second'] . '<br>';
+    echo $periodos['third'];*/
 
 ?>
+
 
 <?php get_header(); ?>
 
